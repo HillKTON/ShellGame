@@ -10,6 +10,7 @@ class Directions(enum.Enum):
     down = ("s", "8")
     left = ("a", "4")
     right = ("d", "6")
+    random_teleport = ("x", "5")
 
 
 @dataclass
@@ -27,7 +28,7 @@ class Memory:
 
 class XAdventureGame:
     def __init__(self):
-        self.LIMITS = Coordinates(x=9, y=9)  # y, x
+        self.LIMITS = Coordinates(x=12, y=12)  # y, x
         self.memory = Memory(head=Coordinates(0, 0), target=Coordinates(0, 0), score=0)
 
         self.SCREEN_SYMBOL = "."
@@ -43,8 +44,14 @@ class XAdventureGame:
             self.memory.head.x -= 1
         elif vector.lower() in Directions.right.value:
             self.memory.head.x += 1
+        elif vector.lower() in Directions.random_teleport.value:
+            self.player_random_teleport()
 
         self.move_validate()
+
+    def player_random_teleport(self):
+        self.memory.head.y = randint(0, self.LIMITS.x)
+        self.memory.head.x = randint(0, self.LIMITS.x)
 
     def move_validate(self) -> None:
         if self.memory.head.y < 0:
@@ -59,8 +66,8 @@ class XAdventureGame:
 
     def target_generator(self, init: bool):
         if self.memory.head == self.memory.target:
-            self.memory.target.x = randint(0, self.LIMITS.x)
             self.memory.target.y = randint(0, self.LIMITS.x)
+            self.memory.target.x = randint(0, self.LIMITS.x)
             if not init:
                 self.memory.score += 1
 
@@ -97,7 +104,7 @@ class XAdventureGame:
             self.screen_render()
             self.game_controls_view()
             userinput = input("Направление: >> ")
-            if userinput.lower() == "exit":
+            if userinput.lower() in ("q", "exit"):
                 break
             else:
                 self.move(userinput)
