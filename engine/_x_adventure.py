@@ -28,7 +28,7 @@ class Memory:
 
 class XAdventureGame:
     def __init__(self):
-        self.LIMITS = Coordinates(x=12, y=12)  # y, x
+        self.LIMITS = Coordinates(x=12, y=12)
         self.memory = Memory(head=Coordinates(0, 0), target=Coordinates(0, 0), score=0)
 
         self.SCREEN_SYMBOL = "."
@@ -89,7 +89,8 @@ class XAdventureGame:
             f"Вверх: {','.join(Directions.up.value)} | "
             f"Вниз: {','.join(Directions.down.value)} | "
             f"Лево: {','.join(Directions.left.value)} | "
-            f"Право: {','.join(Directions.right.value)}"
+            f"Право: {','.join(Directions.right.value)}\n"
+            f"Случайная телепортация: {','.join(Directions.random_teleport.value)}"
         )
 
         print(
