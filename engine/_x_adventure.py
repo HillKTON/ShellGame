@@ -79,16 +79,16 @@ class XAdventureGame:
 
         print(
             "\nУправление:\n"
-            f"Вверх: {','.join(Directions.up.value)}\n"
-            f"Вниз: {','.join(Directions.down.value)}\n"
-            f"Лево: {','.join(Directions.left.value)}\n"
+            f"Вверх: {','.join(Directions.up.value)} | "
+            f"Вниз: {','.join(Directions.down.value)} | "
+            f"Лево: {','.join(Directions.left.value)} | "
             f"Право: {','.join(Directions.right.value)}"
         )
 
         print(
-            "\nИнформация:\n"
-            f"Обозначение игрока: {self.PLAYER_SYMBOL}\n"
-            f"Обозначение цели: {self.TARGET_SYMBOL}\n"
+            "\nОбозначения:\n"
+            f"Игрок: {self.PLAYER_SYMBOL} | "
+            f"Цель: {self.TARGET_SYMBOL}"
         )
 
     def run(self):
