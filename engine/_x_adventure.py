@@ -53,28 +53,28 @@ class XAdventureGame:
         self.memory.head.y = randint(0, self.LIMITS.x)
         self.memory.head.x = randint(0, self.LIMITS.x)
 
-    def move_validate(self) -> None:
+    def move_validate(self):
         if self.memory.head.y < 0:
-            self.memory.head.y = self.LIMITS.y
-        elif self.memory.head.y > self.LIMITS.y:
+            self.memory.head.y = self.LIMITS.y - 1
+        elif self.memory.head.y == self.LIMITS.y:
             self.memory.head.y = 0
 
         if self.memory.head.x < 0:
-            self.memory.head.x = self.LIMITS.x
-        elif self.memory.head.x > self.LIMITS.x:
+            self.memory.head.x = self.LIMITS.x - 1
+        elif self.memory.head.x == self.LIMITS.x:
             self.memory.head.x = 0
 
     def target_generator(self, init: bool):
         if self.memory.head == self.memory.target:
-            self.memory.target.y = randint(0, self.LIMITS.x)
+            self.memory.target.y = randint(0, self.LIMITS.y)
             self.memory.target.x = randint(0, self.LIMITS.x)
             if not init:
                 self.memory.score += 1
 
     def screen_render(self):
         matrix = [
-            [self.SCREEN_SYMBOL for _ in range(self.LIMITS.y + 1)]
-            for _ in range(self.LIMITS.x + 1)
+            [self.SCREEN_SYMBOL for _ in range(self.LIMITS.y)]
+            for _ in range(self.LIMITS.x)
         ]
         matrix[self.memory.head.y][self.memory.head.x] = self.PLAYER_SYMBOL
         matrix[self.memory.target.y][self.memory.target.x] = self.TARGET_SYMBOL
