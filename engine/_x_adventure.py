@@ -1,7 +1,15 @@
+import enum
 from dataclasses import dataclass
 from random import randint
 
 from ._system_api import clear_screen
+
+
+class Directions(enum.Enum):
+    up = ("w", "2")
+    down = ("s", "8")
+    left = ("a", "4")
+    right = ("d", "6")
 
 
 @dataclass
@@ -27,15 +35,15 @@ class XAdventureGame:
             print("  ".join(row))
 
     def move(self, vector: str) -> None:
-        match vector:
-            case "up":
-                self.memory.head.y -= 1
-            case "down":
-                self.memory.head.y += 1
-            case "left":
-                self.memory.head.x -= 1
-            case "right":
-                self.memory.head.x += 1
+        if vector.lower() in Directions.up.value:
+            self.memory.head.y -= 1
+        elif vector.lower() in Directions.down.value:
+            self.memory.head.y += 1
+        elif vector.lower() in Directions.left.value:
+            self.memory.head.x -= 1
+        elif vector.lower() in Directions.right.value:
+            self.memory.head.x += 1
+
         self.move_validate()
 
     def move_validate(self) -> None:
@@ -66,15 +74,9 @@ class XAdventureGame:
             matrix[self.memory.point.y][self.memory.point.x] = "0"
             self.printer(matrix)
             userinput = input("Direction: >> ")
-            if userinput in ("w", "2"):
-                self.move("up")
-            elif userinput in ("s", "8"):
-                self.move("down")
-            elif userinput in ("a", "4"):
-                self.move("left")
-            elif userinput in ("d", "6"):
-                self.move("right")
-            elif userinput in ('exit', 'q'):
+            if userinput.lower() == "exit":
                 break
+            else:
+                self.move(userinput)
             self.point_generator(init=False)
             clear_screen()
