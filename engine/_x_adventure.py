@@ -1,6 +1,6 @@
 import enum
 from dataclasses import dataclass
-from random import randint
+from random import randint, choices
 
 from ._system_api import clear_screen
 
@@ -23,17 +23,24 @@ class Coordinates:
 class Memory:
     head: Coordinates
     target: Coordinates
+    special_target: bool
     score: int
 
 
 class XAdventureGame:
     def __init__(self):
         self.LIMITS = Coordinates(x=12, y=12)
-        self.memory = Memory(head=Coordinates(0, 0), target=Coordinates(0, 0), score=0)
+        self.memory = Memory(
+            head=Coordinates(0, 0),
+            target=Coordinates(0, 0),
+            score=0,
+            special_target=False,
+        )
 
         self.SCREEN_SYMBOL = "."
         self.PLAYER_SYMBOL = "X"
         self.TARGET_SYMBOL = "0"
+        self.SPECIAL_TARGET_SYMBOL = "%"
 
     def move(self, vector: str) -> None:
         if vector.lower() in Directions.up.value:
@@ -66,23 +73,51 @@ class XAdventureGame:
 
     def target_generator(self, init: bool):
         if self.memory.head == self.memory.target:
-            self.memory.target.y = randint(0, self.LIMITS.y)
-            self.memory.target.x = randint(0, self.LIMITS.x)
-            if not init:
-                self.memory.score += 1
+            if not self.memory.special_target:
+                if not init:
+                    self.memory.score += 1
+                self.memory.special_target = choices((True, False), weights=(20, 80))[0]
+                if not self.memory.special_target:
+                    self.memory.target.y = randint(0, self.LIMITS.y - 1)
+                    self.memory.target.x = randint(0, self.LIMITS.x - 1)
+                else:
+                    self.memory.target.y = randint(1, self.LIMITS.y - 2)
+                    self.memory.target.x = randint(1, self.LIMITS.x - 2)
+            else:
+                self.memory.score += 10
+                self.memory.special_target = False
+                self.memory.target.y = randint(0, self.LIMITS.y - 1)
+                self.memory.target.x = randint(0, self.LIMITS.x - 1)
 
     def screen_render(self):
         matrix = [
             [self.SCREEN_SYMBOL for _ in range(self.LIMITS.y)]
             for _ in range(self.LIMITS.x)
         ]
+
+        if not self.memory.special_target:
+            matrix[self.memory.target.y][self.memory.target.x] = self.TARGET_SYMBOL
+        else:
+            for i in range(-1, 2):
+                for j in range(-1, 2):
+                    y_cord = self.memory.target.y + i
+                    x_cord = self.memory.target.x + j
+                    if Coordinates(y=y_cord, x=x_cord) == self.memory.target:
+                        matrix[y_cord][x_cord] = self.SPECIAL_TARGET_SYMBOL
+                    else:
+                        matrix[y_cord][x_cord] = self.TARGET_SYMBOL
+
         matrix[self.memory.head.y][self.memory.head.x] = self.PLAYER_SYMBOL
-        matrix[self.memory.target.y][self.memory.target.x] = self.TARGET_SYMBOL
+
         for row in matrix:
             print("  ".join(row))
 
     def game_controls_view(self):
         print(f"\nКоординаты игрока: {self.memory.head}\nСчёт: {self.memory.score}")
+        if self.memory.special_target:
+            print(
+                "Вам выпала особая цель! Соберите её центр, что-бы получить 10 очков!"
+            )
 
         print(
             "\nУправление:\n"
